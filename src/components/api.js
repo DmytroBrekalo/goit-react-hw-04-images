@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-export const Api = (name, page) => {
+export const Api = async (name, page) => {
   const searchParams = new URLSearchParams({
     q: name,
     page: page,
@@ -9,10 +7,9 @@ export const Api = (name, page) => {
     orientation: 'horizontal',
     per_page: 12,
   });
-  try {
-    const response = axios.get(`https://pixabay.com/api/?${searchParams}`);
-    return response;
-  } catch (error) {
-    console.warn(error);
+  const response = await fetch(`https://pixabay.com/api/?${searchParams}`);
+  if (!response.ok) {
+    throw new Error(response.status);
   }
+  return await response.json();
 };

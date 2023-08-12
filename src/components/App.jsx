@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { SearchBar } from './Searchbar/Searchbar'
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
@@ -6,49 +6,37 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import style from './App.module.css';
 
-export class App extends Component {
-    state = {
-        input: '',
-        page: 1,
-        loadMore: false,
+export const App = () => {
+    const [input, setInput] = useState('');
+    const [page, setPage] = useState(1);
+    const [loadMore, setLoadMore] = useState(false);
+
+    const handleFormSubmit = input => {
+        setInput(input);
+        setPage(1);
     };
 
-    handleFormSubmit = input => {
-        this.setState({
-            input,
-            page: 1,
-        });
-    };
-    handleLearnMorePage = event => {
+    const handleLearnMorePage = event => {
         event.preventDefault();
-        this.setState(() => ({
-            page: this.state.page + 1,
-        }));
+        setPage(prevPage => prevPage + 1);
     };
 
-    handleTotalPages = totalPages => {
-        this.state.page >= totalPages
-            ? this.setState({ loadMore: false })
-            : this.setState({ loadMore: true });
+    const handleTotalPages = totalPages => {
+        page >= totalPages ? setLoadMore(false) : setLoadMore(true);
     };
-    render() {
-        return (
-            <div className={style.App}>
-                <SearchBar onSubmit={this.handleFormSubmit} />
-                <ImageGallery
-                    name={this.state.input}
-                    page={this.state.page}
-                    total={this.handleTotalPages}
+
+    return (
+        <div className={style.App}>
+            <SearchBar onSubmit={handleFormSubmit} />
+            <ImageGallery name={input} page={page} total={handleTotalPages} />
+            {loadMore && (
+                <Button
+                    curPage={page}
+                    learnMorePage={handleLearnMorePage}
+                    isFalse={loadMore}
                 />
-                {this.state.loadMore && (
-                    <Button
-                        curPage={this.state.page}
-                        learnMorePage={this.handleLearnMorePage}
-                        isFalse={this.state.loadMore}
-                    />
             )}
             <ToastContainer autoClose={3000} />
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
